@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Shiro 与 Spring 整合 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- 关联 SecurityManager -->
+		<property name="securityManager" ref="securityManager" />
+
+		<!-- 使用 Shiro 的内置过滤器拦截资源 -->
+		<property name="filterChainDefinitions">
+			<value>
+				/user/login=anon
+				/product/toList=perms[product:list]
+				/product/toAdd=perms[product:add]
+				/product/toUpdate=perms[product:update]
+				/**=authc
+			</value>
+		</property>
+
+		<!-- 修改 shiro 的默认登录请求 -->
+		<property name="loginUrl" value="/toLogin" />
+
+		<!-- 添加未授权提示页面 -->
+		<property name="unauthorizedUrl" value="/unAuth" />
+
+	</bean>
+
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<!-- 关联 realm -->
+		<property name="realm" ref="realm" />
+	</bean>
+
+	<bean id="realm" class="com.shiro.realms.MyRealm" />
+
+</beans>
